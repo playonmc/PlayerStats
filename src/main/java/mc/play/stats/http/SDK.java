@@ -8,15 +8,19 @@ import com.intellectualsites.http.EntityMapper;
 import com.intellectualsites.http.HttpClient;
 import com.intellectualsites.http.HttpResponse;
 import com.intellectualsites.http.external.GsonMapper;
+import mc.play.stats.adapter.LocalDateTimeTypeAdapter;
 import mc.play.stats.obj.Event;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class SDK {
     private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
             .setPrettyPrinting()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
