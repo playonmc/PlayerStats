@@ -1,6 +1,7 @@
 package mc.play.stats;
 
 import com.google.common.collect.Lists;
+import mc.play.stats.http.SDK;
 import mc.play.stats.listener.*;
 import mc.play.stats.obj.Event;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,25 +12,30 @@ import java.util.List;
 
 public class PlayerStatsPlugin extends JavaPlugin {
     private List<Event> events;
+    private SDK sdk;
 
     @Override
     public void onEnable() {
         events = new ArrayList<>();
+        sdk = new SDK("TO-BE-CHANGED");
 
         getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
             List<Event> runEvents = Lists.newArrayList(events.subList(0, Math.min(events.size(), 250)));
             if (runEvents.isEmpty()) return;
 
-//            sdk.sendJoinEvents(runEvents)
-//                    .thenAccept(aVoid -> {
-//                        serverEvents.removeAll(runEvents);
-//                        getLogger().info("Successfully sent join events.");
-//                    })
-//                    .exceptionally(throwable -> {
-//                        getLogger().info("Failed to send join events: " + throwable.getMessage());
-//                        return null;
-//                    });
-        }, 0, 20 * 60);
+            getLogger().info("Sending events..");
+            getLogger().info(SDK.getGson().toJson(runEvents));
+
+            sdk.sendEvents(runEvents)
+                    .thenAccept(aVoid -> {
+                        events.removeAll(runEvents);
+                        getLogger().info("Successfully sent events.");
+                    })
+                    .exceptionally(throwable -> {
+                        getLogger().info("Failed to send join events: " + throwable.getMessage());
+                        return null;
+                    });
+        }, 0, 20 * 10);
 
         Arrays.asList(
                 new ActivityListeners(this),

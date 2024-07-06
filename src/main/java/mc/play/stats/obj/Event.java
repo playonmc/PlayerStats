@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
 /**
@@ -12,6 +13,7 @@ import java.util.StringJoiner;
  */
 public class Event {
     private final String eventType;
+    private final LocalDateTime timestamp;
     private final JsonObject metadata;
 
     /**
@@ -21,8 +23,8 @@ public class Event {
      */
     public Event(String eventType) {
         this.eventType = eventType;
+        this.timestamp = LocalDateTime.now();
         this.metadata = new JsonObject();
-        this.metadata.addProperty("timestamp", Instant.now().toString());
     }
 
     /**
@@ -71,6 +73,15 @@ public class Event {
     }
 
     /**
+     * Gets the timestamp of the event.
+     *
+     * @return The timestamp of the event.
+     */
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    /**
      * Get a specific metadata value.
      *
      * @param key The metadata key.
@@ -99,6 +110,6 @@ public class Event {
     public String toString() {
         StringJoiner metadataJoiner = new StringJoiner(", ");
         metadata.entrySet().forEach(entry -> metadataJoiner.add(entry.getKey() + "=" + entry.getValue()));
-        return "Event[type=" + eventType + ", metadata={" + metadataJoiner + "}]";
+        return "Event[type=" + eventType + ", timestamp=" + timestamp + ", metadata={" + metadataJoiner + "}]";
     }
 }
