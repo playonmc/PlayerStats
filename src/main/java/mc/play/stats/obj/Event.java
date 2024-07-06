@@ -6,6 +6,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.StringJoiner;
 
 /**
@@ -23,7 +24,7 @@ public class Event {
      */
     public Event(String eventType) {
         this.eventType = eventType;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now(ZoneOffset.UTC);
         this.metadata = new JsonObject();
     }
 

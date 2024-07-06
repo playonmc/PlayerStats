@@ -17,10 +17,11 @@ public class CommandListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
+        String command = event.getMessage().split(" ")[0].substring(1);
+
         Event commandEvent = new Event("player:command")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
-                .setMetadata("command", event.getMessage());
-        plugin.addEvent(commandEvent);
+                .setMetadata("command", command);
+
+        plugin.triggerEvent(commandEvent, player);
     }
 }

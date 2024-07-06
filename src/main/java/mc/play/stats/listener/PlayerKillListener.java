@@ -3,6 +3,7 @@ package mc.play.stats.listener;
 import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import static mc.play.stats.util.ItemStackSerializer.convertItemStackArrayToEvent;
+import static mc.play.stats.util.ItemStackSerializer.convertItemStackToEvent;
 
 public class PlayerKillListener implements Listener {
     private final PlayerStatsPlugin plugin;
@@ -33,10 +35,13 @@ public class PlayerKillListener implements Listener {
         String causeOfDeath = entity.getLastDamageCause() != null ? entity.getLastDamageCause().getCause().toString() : "UNKNOWN";
         Location entityLocation = entity.getLocation();
         World world = entityLocation.getWorld();
+        ItemStack itemInUse = killer.getInventory().getItemInMainHand();
+
+        Event customEvent;
 
         // Determine whether the killed entity is a player
         if (entity instanceof Player) {
-            Event killEvent = new Event("player:kill")
+            customEvent = new Event("player:kill")
                     .setMetadata("playerName", killer.getName())
                     .setMetadata("playerUuid", killer.getUniqueId().toString())
                     .setMetadata("victimName", entity.getName())
@@ -47,14 +52,9 @@ public class PlayerKillListener implements Listener {
                     .setMetadata("location.world", world == null ? "UNKNOWN" : world.getName())
                     .setMetadata("causeOfDeath", causeOfDeath);
 
-            // Add inventory contents to event
-            convertItemStackArrayToEvent(killEvent, "droppedItems", event.getDrops().toArray(new ItemStack[0]));
-
-
-            plugin.addEvent(killEvent);
         } else {
             // Handling the death of non-player entities (e.g., mobs)
-            Event mobKillEvent = new Event("mob:kill")
+            customEvent = new Event("mob:kill")
                     .setMetadata("playerName", killer.getName())
                     .setMetadata("playerUuid", killer.getUniqueId().toString())
                     .setMetadata("mobType", entity.getType().name())
@@ -64,8 +64,14 @@ public class PlayerKillListener implements Listener {
                     .setMetadata("location.world", world == null ? "UNKNOWN" : world.getName())
                     .setMetadata("causeOfDeath", causeOfDeath);
 
-            convertItemStackArrayToEvent(mobKillEvent, "droppedItems", event.getDrops().toArray(new ItemStack[0]));
-            plugin.addEvent(mobKillEvent);
         }
+
+        if (itemInUse.getType() == Material.AIR) {
+            customEvent.setMetadata("weaponUsed", "hand");
+        } else {
+            convertItemStackToEvent(customEvent, "weaponUsed", itemInUse);
+        }
+
+        plugin.addEvent(customEvent);
     }
 }
