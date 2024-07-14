@@ -1,5 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+defaultTasks("shadowJar")
+
 plugins {
     id("java")
     id("io.github.goooler.shadow") version "8.1.8"
