@@ -27,10 +27,8 @@ public class AdvancementListener implements Listener {
         }
 
         Event advancementEvent = new Event("player:advancement")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
                 .setMetadata("advancement", plainTextComponentSerializer.serialize(advancement.getDisplay().title()));
         
-        plugin.addEvent(advancementEvent);
+        plugin.triggerEvent(advancementEvent, player);
     }
 }
