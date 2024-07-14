@@ -60,7 +60,8 @@ public class PlayerStatsPlugin extends JavaPlugin {
                 new PlayerKillListener(this),
                 new PortalListeners(this),
                 new RespawnListener(this),
-                new ShearListener(this)
+                new ShearListener(this),
+                new CraftListener(this)
         ).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 
