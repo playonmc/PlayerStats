@@ -22,6 +22,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     compileOnly("com.google.code.gson:gson:2.11.0")
     implementation("com.intellectualsites.http:HTTP4J:1.6-SNAPSHOT")
+    implementation("com.jeff-media:custom-block-data:2.2.2")
 }
 
 java {

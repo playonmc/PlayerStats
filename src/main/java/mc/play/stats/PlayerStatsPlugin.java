@@ -22,6 +22,7 @@ public class PlayerStatsPlugin extends JavaPlugin {
         if(events == null) {
             events = new ArrayList<>();
         }
+
         sdk = new SDK("TO-BE-CHANGED");
 
         task = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
