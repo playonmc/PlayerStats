@@ -26,27 +26,25 @@ public class ActivityListeners implements Listener {
         String ipAddress = address == null ? "EMPTY" : address.getAddress().getHostAddress();
 
         Event joinEvent = new Event("player:join")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
                 .setMetadata("lastJoined", System.currentTimeMillis());
+
         if (firstJoin) {
             joinEvent.setMetadata("firstJoin", true);
         }
 
-        plugin.addEvent(joinEvent);
+        plugin.triggerEvent(joinEvent, player);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         long playTime = System.currentTimeMillis() - player.getLastPlayed();
+
         Event quitEvent = new Event("player:quit")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
                 .setMetadata("lastJoined", System.currentTimeMillis())
                 .setMetadata("quitReason", ChatColor.stripColor(event.getQuitMessage()))
                 .setMetadata("playTime", playTime);
 
-        plugin.addEvent(quitEvent);
+        plugin.triggerEvent(quitEvent, player);
     }
 }

@@ -28,16 +28,13 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
 
         Event blockPlaceEvent = new Event("block:place")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
                 .setMetadata("blockType", block.getType().toString())
                 .setMetadata("location.x", blockLocation.getBlockX())
                 .setMetadata("location.y", blockLocation.getBlockY())
                 .setMetadata("location.z", blockLocation.getBlockZ())
-                .setMetadata("location.world", block.getWorld().getName())
-                .setMetadata("blockData", block.getBlockData().getAsString());
+                .setMetadata("location.world", block.getWorld().getName());
 
-        plugin.addEvent(blockPlaceEvent);
+        plugin.triggerEvent(blockPlaceEvent, player);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -48,14 +45,11 @@ public class BlockListeners implements Listener {
         ItemStack itemInUse = player.getInventory().getItemInMainHand();
 
         Event blockBreakEvent = new Event("block:break")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
                 .setMetadata("blockType", block.getType().toString())
                 .setMetadata("location.x", blockLocation.getBlockX())
                 .setMetadata("location.y", blockLocation.getBlockY())
                 .setMetadata("location.z", blockLocation.getBlockZ())
                 .setMetadata("location.world", block.getWorld().getName())
-                .setMetadata("blockData", block.getBlockData().getAsString())
                 .setMetadata("expDrop", event.getExpToDrop());
 
         if (itemInUse.getType() == Material.AIR) {
@@ -64,6 +58,6 @@ public class BlockListeners implements Listener {
             convertItemStackToEvent(blockBreakEvent, "brokenBy", itemInUse);
         }
 
-        plugin.addEvent(blockBreakEvent);
+        plugin.triggerEvent(blockBreakEvent, player);
     }
 }
