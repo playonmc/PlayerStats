@@ -4,6 +4,7 @@ import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 
@@ -14,13 +15,13 @@ public class KickListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
+
         Event kickEvent = new Event("player:kick")
-                .setMetadata("playerName", player.getName())
-                .setMetadata("playerUuid", player.getUniqueId().toString())
-                .setMetadata("reason", event.getReason());
-        plugin.addEvent(kickEvent);
+                .setMetadata("reason", event.getReason())
+                .setMetadata("world", player.getWorld().getName());
+        plugin.triggerEvent(kickEvent, player);
     }
 }

@@ -3,10 +3,13 @@ package mc.play.stats.listener;
 import com.jeff_media.customblockdata.CustomBlockData;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import mc.play.stats.PlayerStatsPlugin;
+import mc.play.stats.obj.Event;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
@@ -27,7 +30,7 @@ public class BlockListeners implements Listener {
         this.blockBreakKey = new NamespacedKey(plugin, "stats_ignore_break");
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
         ItemStack itemInHand = event.getItemInHand();
@@ -47,19 +50,23 @@ public class BlockListeners implements Listener {
             If it has, we won't track the stats for it again.
          */
         if (hasBeenPlaced) {
-            player.sendMessage("You have already placed this block before. Ignoring.");
             return;
         }
 
         // It hasn't been placed before, so we set the tracking data.
         customBlockData.set(blockPlaceKey, PersistentDataType.BOOLEAN, true);
-        player.sendMessage("You have placed a block for the first time. Tracking.");
+
+        Event blockPlaceEvent = new Event("block:place")
+                .setMetadata("blockType", block.getType().toString())
+                .setMetadata("world", player.getWorld().getName());
+        plugin.triggerEvent(blockPlaceEvent, player);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Player player = event.getPlayer();
+        ItemStack itemInUse = player.getInventory().getItemInMainHand();
 
         PersistentDataContainer customBlockData = new CustomBlockData(block, plugin);
 
@@ -68,16 +75,22 @@ public class BlockListeners implements Listener {
             If it has, we won't track the stats for it again.
          */
         if (customBlockData.has(blockBreakKey, PersistentDataType.BOOLEAN)) {
-            player.sendMessage("You have already broken this block before. Ignoring.");
             return;
         }
 
         // It hasn't been broken before, so we set the tracking data.
         customBlockData.set(blockBreakKey, PersistentDataType.BOOLEAN, true);
-        player.sendMessage("You have broken a block for the first time. Tracking.");
+
+        String blockType = itemInUse.getType() == Material.AIR ? "hand" : itemInUse.getType().name();
+        Event blockBreakEvent = new Event("block:break")
+                .setMetadata("blockType", block.getType().toString())
+                .setMetadata("expDrop", event.getExpToDrop())
+                .setMetadata("brokenBy", blockType.toUpperCase())
+                .setMetadata("world", player.getWorld().getName());
+        plugin.triggerEvent(blockBreakEvent, player);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockItemDrop(BlockDropItemEvent event) {
         Block block = event.getBlock();
 

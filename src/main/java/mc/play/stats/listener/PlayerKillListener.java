@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,7 @@ public class PlayerKillListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
         Player killer = entity.getKiller();
@@ -42,36 +43,23 @@ public class PlayerKillListener implements Listener {
         // Determine whether the killed entity is a player
         if (entity instanceof Player) {
             customEvent = new Event("player:kill")
-                    .setMetadata("playerName", killer.getName())
-                    .setMetadata("playerUuid", killer.getUniqueId().toString())
                     .setMetadata("victimName", entity.getName())
                     .setMetadata("victimUuid", entity.getUniqueId().toString())
-                    .setMetadata("location.x", entityLocation.getBlockX())
-                    .setMetadata("location.y", entityLocation.getBlockY())
-                    .setMetadata("location.z", entityLocation.getBlockZ())
-                    .setMetadata("location.world", world == null ? "UNKNOWN" : world.getName())
+                    .setMetadata("world", world == null ? "UNKNOWN" : world.getName())
                     .setMetadata("causeOfDeath", causeOfDeath);
 
         } else {
             // Handling the death of non-player entities (e.g., mobs)
             customEvent = new Event("mob:kill")
-                    .setMetadata("playerName", killer.getName())
-                    .setMetadata("playerUuid", killer.getUniqueId().toString())
                     .setMetadata("mobType", entity.getType().name())
-                    .setMetadata("location.x", entityLocation.getBlockX())
-                    .setMetadata("location.y", entityLocation.getBlockY())
-                    .setMetadata("location.z", entityLocation.getBlockZ())
-                    .setMetadata("location.world", world == null ? "UNKNOWN" : world.getName())
+                    .setMetadata("world", world == null ? "UNKNOWN" : world.getName())
                     .setMetadata("causeOfDeath", causeOfDeath);
 
         }
 
-        if (itemInUse.getType() == Material.AIR) {
-            customEvent.setMetadata("weaponUsed", "hand");
-        } else {
-            convertItemStackToEvent(customEvent, "weaponUsed", itemInUse);
-        }
+        String blockType = itemInUse.getType() == Material.AIR ? "hand" : itemInUse.getType().name();
+        customEvent.setMetadata("weaponUsed", blockType.toUpperCase());
 
-        plugin.addEvent(customEvent);
+        plugin.triggerEvent(customEvent, killer);
     }
 }

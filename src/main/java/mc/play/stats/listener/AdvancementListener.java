@@ -6,6 +6,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 
@@ -17,7 +18,7 @@ public class AdvancementListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerAdvancement(PlayerAdvancementDoneEvent event) {
         Player player = event.getPlayer();
         Advancement advancement = event.getAdvancement();
@@ -26,8 +27,9 @@ public class AdvancementListener implements Listener {
             return;
         }
 
+        String advancementTitle = plainTextComponentSerializer.serialize(advancement.getDisplay().title());
         Event advancementEvent = new Event("player:advancement")
-                .setMetadata("advancement", plainTextComponentSerializer.serialize(advancement.getDisplay().title()));
+                .setMetadata("advancement", advancementTitle);
         
         plugin.triggerEvent(advancementEvent, player);
     }

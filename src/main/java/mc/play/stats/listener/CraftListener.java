@@ -4,6 +4,7 @@ import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
@@ -16,7 +17,7 @@ public class CraftListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerCraft(CraftItemEvent event) {
         if(event.getAction() == InventoryAction.NOTHING) {
             return;
@@ -29,7 +30,8 @@ public class CraftListener implements Listener {
         ItemStack result = event.getRecipe().getResult();
 
         Event craftEvent = new Event("player:craft")
-                .setMetadata("item", result.getType().name());
+                .setMetadata("item", result.getType().name())
+                .setMetadata("world", player.getWorld().getName());
 
         plugin.triggerEvent(craftEvent, player);
     }
