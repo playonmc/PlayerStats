@@ -2,15 +2,11 @@ package mc.play.stats.listener;
 
 import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-
-import static mc.play.stats.util.ItemStackSerializer.convertItemStackArrayToEvent;
 
 public class PlayerDeathListener implements Listener {
     private final PlayerStatsPlugin plugin;

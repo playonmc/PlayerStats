@@ -13,9 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import static mc.play.stats.util.ItemStackSerializer.convertItemStackArrayToEvent;
-import static mc.play.stats.util.ItemStackSerializer.convertItemStackToEvent;
-
 public class PlayerKillListener implements Listener {
     private final PlayerStatsPlugin plugin;
 
