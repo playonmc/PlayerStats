@@ -35,8 +35,16 @@ public class DistanceEventUtil {
                     Event rideEvent = new Event("player:ride")
                             .setMetadata("distance", roundedDistance)
                             .setMetadata("speed", speed)
-                            .setMetadata("animal", eventInfo.getVehicleType().toString());
+                            .setMetadata("vehicle", eventInfo.getVehicleType().toString());
                     plugin.triggerEvent(rideEvent, player);
+                }
+                break;
+            case SWIM:
+                if (distance >= minDistanceRode) { // Assuming same minimum distance for swimming
+                    Event swimEvent = new Event("player:swim")
+                            .setMetadata("distance", roundedDistance)
+                            .setMetadata("speed", speed);
+                    plugin.triggerEvent(swimEvent, player);
                 }
                 break;
         }

@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
@@ -47,6 +48,23 @@ public class DistanceListener implements Listener {
     public void onVehicleExit(VehicleExitEvent event) {
         if (event.getExited() instanceof Player player) {
             plugin.getDistanceManager().getDistanceEventUtil().processDistanceEvent(player, plugin.getDistanceManager().getEventDistanceInfo().remove(player.getUniqueId()), plugin.getDistanceManager().getMinDistanceFlown(), plugin.getDistanceManager().getMinDistanceRode());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+        EventDistanceInfo eventInfo = plugin.getDistanceManager().getEventDistanceInfo().get(playerId);
+
+        if (player.isSwimming()) {
+            if (eventInfo == null || eventInfo.getActivityType() != EventDistanceInfo.ActivityType.SWIM) {
+                plugin.getLogger().info("Player " + player.getName() + " started swimming. Starting new swim distance tracking.");
+                plugin.getDistanceManager().getEventDistanceInfo().put(playerId, new EventDistanceInfo(player.getLocation(), null, System.currentTimeMillis(), EventDistanceInfo.ActivityType.SWIM));
+            }
+        } else if (eventInfo != null && eventInfo.getActivityType() == EventDistanceInfo.ActivityType.SWIM) {
+            plugin.getLogger().info("Player " + player.getName() + " stopped swimming. Processing swim distance event.");
+            plugin.getDistanceManager().getDistanceEventUtil().processDistanceEvent(player, plugin.getDistanceManager().getEventDistanceInfo().remove(playerId), plugin.getDistanceManager().getMinDistanceFlown(), plugin.getDistanceManager().getMinDistanceRode());
         }
     }
 }

@@ -10,7 +10,7 @@ public class EventDistanceInfo {
     private final ActivityType activityType;
 
     public enum ActivityType {
-        GLIDE, RIDE, CLIMB
+        GLIDE, RIDE, SWIM
     }
 
     public EventDistanceInfo(Location startLocation, EntityType vehicleType, long startTime, ActivityType activityType) {

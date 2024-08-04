@@ -4,7 +4,9 @@ import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.EventDistanceInfo;
 import mc.play.stats.util.DistanceEventUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ public class DistanceManager {
     public DistanceManager(PlayerStatsPlugin plugin) {
         this.eventDistanceInfo = new HashMap<>();
         this.distanceEventUtil = new DistanceEventUtil(plugin);
+        initializeTrackingForExistingVehicles();
     }
 
     public Map<UUID, EventDistanceInfo> getEventDistanceInfo() {
@@ -45,5 +48,19 @@ public class DistanceManager {
             }
         }
         eventDistanceInfo.clear();
+    }
+
+    private void initializeTrackingForExistingVehicles() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.isInsideVehicle()) {
+                Vehicle vehicle = (Vehicle) player.getVehicle();
+                if (vehicle != null) {
+                    EntityType vehicleType = vehicle.getType();
+                    if (vehicleType == EntityType.BOAT || vehicleType == EntityType.HORSE || vehicleType == EntityType.PIG || vehicleType == EntityType.DONKEY) {
+                        eventDistanceInfo.put(player.getUniqueId(), new EventDistanceInfo(player.getLocation(), vehicleType, System.currentTimeMillis(), EventDistanceInfo.ActivityType.RIDE));
+                    }
+                }
+            }
+        }
     }
 }
