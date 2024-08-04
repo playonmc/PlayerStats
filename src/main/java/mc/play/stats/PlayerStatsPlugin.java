@@ -3,25 +3,28 @@ package mc.play.stats;
 import com.google.common.collect.Lists;
 import mc.play.stats.http.SDK;
 import mc.play.stats.listener.*;
+import mc.play.stats.manager.DistanceManager;
 import mc.play.stats.obj.Event;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class PlayerStatsPlugin extends JavaPlugin {
-    private List<Event> events;
+    private final List<Event> events;
     private SDK sdk;
     private BukkitTask task;
+    private DistanceManager distanceManager;
+
+    public PlayerStatsPlugin() {
+        this.events = new ArrayList<>();
+    }
 
     @Override
     public void onEnable() {
-        if(events == null) {
-            events = new ArrayList<>();
-        }
+        distanceManager = new DistanceManager(this);
 
         sdk = new SDK("TO-BE-CHANGED");
 
@@ -46,15 +49,16 @@ public class PlayerStatsPlugin extends JavaPlugin {
         Arrays.asList(
                 new ActivityListeners(this),
                 new AdvancementListener(this),
+                new AnvilUseListener(this),
                 new BedListener(this),
                 new BlockListeners(this),
                 new ChatListener(this),
                 new CommandListener(this),
+                new DistanceListener(this),
                 new FishListener(this),
                 new ItemConsumeListener(this),
                 new ItemEnchantListener(this),
                 new ItemListeners(this),
-                new KickListener(this),
                 new LevelUpListener(this),
                 new PlayerDamageListener(this),
                 new PlayerDeathListener(this),
@@ -69,6 +73,7 @@ public class PlayerStatsPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         task.cancel();
+        distanceManager.finalizeAllDistanceEvents();
     }
 
     public void triggerEvent(Event event, Player player) {
@@ -81,5 +86,9 @@ public class PlayerStatsPlugin extends JavaPlugin {
     public void addEvent(Event event) {
         getLogger().info("Triggered event: " + event.toString());
         events.add(event);
+    }
+
+    public DistanceManager getDistanceManager() {
+        return distanceManager;
     }
 }

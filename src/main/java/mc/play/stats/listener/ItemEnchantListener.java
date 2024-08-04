@@ -8,6 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 
+import java.util.stream.Collectors;
+
 public class ItemEnchantListener implements Listener {
     private final PlayerStatsPlugin plugin;
 
@@ -19,9 +21,14 @@ public class ItemEnchantListener implements Listener {
     public void onPlayerItemEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
 
+        // get list of enchantments that were added in a human-readable format
+        String enchantments = event.getEnchantsToAdd().entrySet().stream()
+                .map(entry -> entry.getKey().getKey().getKey() + " " + entry.getValue())
+                .collect(Collectors.joining(", "));
+
         Event itemEnchantEvent = new Event("player:item_enchant")
                 .setMetadata("item", event.getItem().getType().toString())
-                .setMetadata("enchantments", event.getEnchantsToAdd().toString())
+                .setMetadata("enchantments", enchantments)
                 .setMetadata("world", player.getWorld().getName());
         plugin.triggerEvent(itemEnchantEvent, player);
     }

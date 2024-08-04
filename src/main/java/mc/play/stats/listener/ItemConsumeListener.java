@@ -18,12 +18,9 @@ public class ItemConsumeListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
-        String effectGained = event.getItem().getItemMeta() != null && event.getItem().getItemMeta().hasDisplayName() ? event.getItem().getItemMeta().getDisplayName() : "none";
 
         Event consumeEvent = new Event("player:eat")
-                .setMetadata("item", event.getItem().getType().toString())
-                .setMetadata("effectGained", effectGained)
-                .setMetadata("world", player.getWorld().getName());
+                .setMetadata("item", event.getItem().getType().toString());
 
         plugin.triggerEvent(consumeEvent, player);
     }
