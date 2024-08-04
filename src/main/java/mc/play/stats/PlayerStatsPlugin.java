@@ -92,6 +92,6 @@ public class PlayerStatsPlugin extends JavaPlugin {
 
     public void addEvent(Event event) {
         getLogger().info("Triggered event: " + event.toString());
-        //events.add(event);
+        events.add(event);
     }
 }
