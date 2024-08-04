@@ -1,6 +1,7 @@
 package mc.play.stats;
 
 import com.google.common.collect.Lists;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import mc.play.stats.http.SDK;
 import mc.play.stats.listener.*;
 import mc.play.stats.manager.PlayerStatisticHeartbeatManager;
@@ -8,14 +9,14 @@ import mc.play.stats.obj.Event;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerStatsPlugin extends JavaPlugin {
     private final List<Event> events;
     private SDK sdk;
-    private BukkitTask task;
+    private ScheduledTask task;
     private PlayerStatisticHeartbeatManager playerStatisticHeartbeatManager;
 
     public PlayerStatsPlugin() {
@@ -30,23 +31,25 @@ public class PlayerStatsPlugin extends JavaPlugin {
     public void onEnable() {
         sdk = new SDK("TO-BE-CHANGED");
 
-        task = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
-            List<Event> runEvents = Lists.newArrayList(events.subList(0, Math.min(events.size(), 250)));
-            if (runEvents.isEmpty()) return;
+        task = getServer().getAsyncScheduler().runAtFixedRate(this,
+                scheduledTask -> {
+                    List<Event> runEvents = Lists.newArrayList(events.subList(0, Math.min(events.size(), 250)));
+                    if (runEvents.isEmpty()) return;
 
-            getLogger().info("Sending events..");
-            getLogger().info(SDK.getGson().toJson(runEvents));
+                    getLogger().info("Sending events..");
+                    getLogger().info(SDK.getGson().toJson(runEvents));
 
-            sdk.sendEvents(runEvents)
-                    .thenAccept(aVoid -> {
-                        events.removeAll(runEvents);
-                        getLogger().info("Successfully sent events.");
-                    })
-                    .exceptionally(throwable -> {
-                        getLogger().info("Failed to send join events: " + throwable.getMessage());
-                        return null;
-                    });
-        }, 0, 20 * 10);
+                    sdk.sendEvents(runEvents)
+                            .thenAccept(aVoid -> {
+                                events.removeAll(runEvents);
+                                getLogger().info("Successfully sent events.");
+                            })
+                            .exceptionally(throwable -> {
+                                getLogger().info("Failed to send join events: " + throwable.getMessage());
+                                return null;
+                            });
+                },
+                0, 10, TimeUnit.SECONDS);
 
         Arrays.asList(
                 new ActivityListeners(this),
