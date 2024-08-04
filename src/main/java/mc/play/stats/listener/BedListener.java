@@ -18,7 +18,11 @@ public class BedListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        player.getWorld();
+
+        if(event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK) {
+            return;
+        }
+
         Event bedEnterEvent = new Event("player:bed_enter")
                 .setMetadata("world", player.getWorld().getName());
 
