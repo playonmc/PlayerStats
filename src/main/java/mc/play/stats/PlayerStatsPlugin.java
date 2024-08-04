@@ -3,7 +3,7 @@ package mc.play.stats;
 import com.google.common.collect.Lists;
 import mc.play.stats.http.SDK;
 import mc.play.stats.listener.*;
-import mc.play.stats.manager.DistanceManager;
+import mc.play.stats.manager.PlayerStatisticHeartbeatManager;
 import mc.play.stats.obj.Event;
 
 import org.bukkit.entity.Player;
@@ -16,16 +16,18 @@ public class PlayerStatsPlugin extends JavaPlugin {
     private final List<Event> events;
     private SDK sdk;
     private BukkitTask task;
-    private DistanceManager distanceManager;
+    private PlayerStatisticHeartbeatManager playerStatisticHeartbeatManager;
 
     public PlayerStatsPlugin() {
         this.events = new ArrayList<>();
     }
 
+    public PlayerStatisticHeartbeatManager getPlayerStatisticHeartbeatManager() {
+        return playerStatisticHeartbeatManager;
+    }
+
     @Override
     public void onEnable() {
-        distanceManager = new DistanceManager(this);
-
         sdk = new SDK("TO-BE-CHANGED");
 
         task = getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
@@ -54,7 +56,6 @@ public class PlayerStatsPlugin extends JavaPlugin {
                 new BlockListeners(this),
                 new ChatListener(this),
                 new CommandListener(this),
-                new DistanceListener(this),
                 new FishListener(this),
                 new ItemConsumeListener(this),
                 new ItemEnchantListener(this),
@@ -68,12 +69,15 @@ public class PlayerStatsPlugin extends JavaPlugin {
                 new ShearListener(this),
                 new CraftListener(this)
         ).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
+
+        // Load the PlayerStatisticHeartbeatManager
+        playerStatisticHeartbeatManager = new PlayerStatisticHeartbeatManager(this);
     }
 
     @Override
     public void onDisable() {
         task.cancel();
-        distanceManager.finalizeAllDistanceEvents();
+        playerStatisticHeartbeatManager.stop();
     }
 
     public void triggerEvent(Event event, Player player) {
@@ -85,10 +89,6 @@ public class PlayerStatsPlugin extends JavaPlugin {
 
     public void addEvent(Event event) {
         getLogger().info("Triggered event: " + event.toString());
-        events.add(event);
-    }
-
-    public DistanceManager getDistanceManager() {
-        return distanceManager;
+        //events.add(event);
     }
 }

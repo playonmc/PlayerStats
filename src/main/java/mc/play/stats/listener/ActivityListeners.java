@@ -29,6 +29,7 @@ public class ActivityListeners implements Listener {
         }
 
         plugin.triggerEvent(joinEvent, player);
+        plugin.getPlayerStatisticHeartbeatManager().addPlayer(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -41,5 +42,6 @@ public class ActivityListeners implements Listener {
                 .setMetadata("playTime", playTime);
 
         plugin.triggerEvent(quitEvent, player);
+        plugin.getPlayerStatisticHeartbeatManager().removePlayer(player.getUniqueId());
     }
 }

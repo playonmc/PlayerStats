@@ -29,8 +29,8 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-tasks.register("copyToServer", Copy::class.java) {
-    from(project.tasks.named("shadowJar").get().outputs)
+tasks.register<Copy>("copyToServer") {
+    from(tasks.named("shadowJar").get().outputs)
     into("D:\\Minecraft Servers\\PlayMC\\plugins")
 
     // rely on the shadowJar task to build the jar
