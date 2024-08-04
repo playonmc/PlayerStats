@@ -21,7 +21,6 @@ public class PortalListeners implements Listener {
 
         Event portalEnterEvent = new Event("player:portal_enter")
                 .setMetadata("portalType", event.getCause().toString())
-                .setMetadata("location", player.getLocation().toString())
                 .setMetadata("world", player.getWorld().getName());
 
         plugin.triggerEvent(portalEnterEvent, player);

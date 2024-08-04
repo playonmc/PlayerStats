@@ -2,15 +2,12 @@ package mc.play.stats.listener;
 
 import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.net.InetSocketAddress;
 
 public class ActivityListeners implements Listener {
     private final PlayerStatsPlugin plugin;
@@ -23,8 +20,6 @@ public class ActivityListeners implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         boolean firstJoin = !player.hasPlayedBefore();
-        InetSocketAddress address = event.getPlayer().getAddress();
-        String ipAddress = address == null ? "EMPTY" : address.getAddress().getHostAddress();
 
         Event joinEvent = new Event("player:join")
                 .setMetadata("lastJoined", System.currentTimeMillis());
@@ -39,11 +34,10 @@ public class ActivityListeners implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        long playTime = System.currentTimeMillis() - player.getLastPlayed();
+        long playTime = System.currentTimeMillis() - player.getLastLogin();
 
         Event quitEvent = new Event("player:quit")
                 .setMetadata("lastJoined", System.currentTimeMillis())
-                .setMetadata("quitReason", ChatColor.stripColor(event.getQuitMessage()))
                 .setMetadata("playTime", playTime);
 
         plugin.triggerEvent(quitEvent, player);

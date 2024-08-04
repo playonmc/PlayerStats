@@ -30,7 +30,7 @@ public class AdvancementListener implements Listener {
         String advancementTitle = plainTextComponentSerializer.serialize(advancement.getDisplay().title());
         Event advancementEvent = new Event("player:advancement")
                 .setMetadata("advancement", advancementTitle);
-        
+
         plugin.triggerEvent(advancementEvent, player);
     }
 }

@@ -19,23 +19,28 @@ public class FishListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerFish(PlayerFishEvent event) {
-        Player player = event.getPlayer();
-        String caughtEntity = "none";
-        String caughtItem = "none";
+        PlayerFishEvent.State state = event.getState();
 
-        Entity caught = event.getCaught();
-        if (caught != null) {
-            caughtEntity = caught.getType().toString();
+        // Only process event if state is CAUGHT_FISH or FISHING
+        if (state == PlayerFishEvent.State.CAUGHT_FISH) {
+            Player player = event.getPlayer();
+            String caughtEntity = "none";
+            String caughtItem = "none";
 
-            if (caught instanceof Item item) {
-                caughtItem = item.getType().toString();
+            Entity caught = event.getCaught();
+            if (caught != null) {
+                caughtEntity = caught.getType().toString();
+
+                if (caught instanceof Item item) {
+                    caughtItem = item.getType().toString();
+                }
             }
-        }
 
-        Event fishEvent = new Event("player:fish")
-                .setMetadata("state", event.getState().toString())
-                .setMetadata("caughtEntity", caughtEntity)
-                .setMetadata("caughtItem", caughtItem);
-        plugin.triggerEvent(fishEvent, player);
+            Event fishEvent = new Event("player:fish")
+                    .setMetadata("state", state.toString())
+                    .setMetadata("caughtEntity", caughtEntity)
+                    .setMetadata("caughtItem", caughtItem);
+            plugin.triggerEvent(fishEvent, player);
+        }
     }
 }

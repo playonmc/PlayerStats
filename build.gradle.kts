@@ -31,7 +31,7 @@ java {
 
 tasks.register("copyToServer", Copy::class.java) {
     from(project.tasks.named("shadowJar").get().outputs)
-    into("/Users/charlie/MCServers/Paper/plugins")
+    into("D:\\Minecraft Servers\\PlayMC\\plugins")
 
     // rely on the shadowJar task to build the jar
     dependsOn("shadowJar")
