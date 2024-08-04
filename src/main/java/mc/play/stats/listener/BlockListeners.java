@@ -17,7 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
-import static mc.play.stats.util.BlockExcludeUtil.SKIP_BLOCKS;
+import static mc.play.stats.util.BlockUtil.SKIP_BLOCKS;
 
 public class BlockListeners implements Listener {
     private final PlayerStatsPlugin plugin;

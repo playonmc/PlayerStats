@@ -5,7 +5,11 @@ import org.bukkit.Material;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class BlockExcludeUtil {
+public class BlockUtil {
+    public static boolean isClimbing(Material blockType) {
+        return blockType == Material.LADDER || blockType == Material.VINE || blockType == Material.SCAFFOLDING;
+    }
+
     public static final Set<Material> SKIP_BLOCKS = EnumSet.of(
             Material.BARRIER,
             Material.COMMAND_BLOCK,

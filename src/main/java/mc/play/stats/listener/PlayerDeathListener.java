@@ -20,7 +20,6 @@ public class PlayerDeathListener implements Listener {
         Player player = event.getEntity();
 
         Event deathEvent = new Event("player:death")
-                .setMetadata("deathMessage", event.getDeathMessage())
                 .setMetadata("world", player.getWorld().getName())
                 .setMetadata("causeOfDeath", player.getLastDamageCause() != null ? player.getLastDamageCause().getCause().toString() : "UNKNOWN");
 
