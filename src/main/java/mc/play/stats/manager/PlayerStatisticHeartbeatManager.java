@@ -3,8 +3,12 @@ package mc.play.stats.manager;
 import mc.play.stats.PlayerStatsPlugin;
 import mc.play.stats.obj.Event;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.*;
 
@@ -12,12 +16,15 @@ public class PlayerStatisticHeartbeatManager {
     private static final int HEARTBEAT_INTERVAL = 30 * 20; // 30 seconds, assuming 20 ticks per second
     private final PlayerStatsPlugin plugin;
     private final List<UUID> players;
+    private final LuckPerms luckPerms;
     private ScheduledTask task;
 
     public PlayerStatisticHeartbeatManager(PlayerStatsPlugin plugin) {
         this.plugin = plugin;
         this.players = new ArrayList<>();
         this.start();
+
+        this.luckPerms = LuckPermsProvider.get();
     }
 
     public void addPlayer(UUID uuid) {
@@ -62,13 +69,21 @@ public class PlayerStatisticHeartbeatManager {
             return;
         }
 
+        User user = luckPerms.getUserManager().getUser(bukkitPlayer.getUniqueId());
         Event playerEvent = new Event("player:update")
+                .setMetadata("xp", bukkitPlayer.getTotalExperience())
+                .setMetadata("level", bukkitPlayer.getLevel())
+                .setMetadata("health", bukkitPlayer.getHealth())
+                .setMetadata("food_level", bukkitPlayer.getFoodLevel())
+                .setMetadata("saturation", bukkitPlayer.getSaturation())
+                .setMetadata("exhaustion", bukkitPlayer.getExhaustion())
+                .setMetadata("rank", user != null ? user.getPrimaryGroup() : null)
+
                 .setMetadata("glide_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.AVIATE_ONE_CM) / 100.0)
                 .setMetadata("walk_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.WALK_ONE_CM) / 100.0)
                 .setMetadata("sprint_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.SPRINT_ONE_CM) / 100.0)
                 .setMetadata("swim_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.SWIM_ONE_CM) / 100.0)
                 .setMetadata("fall_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.FALL_ONE_CM) / 100.0)
-                .setMetadata("fly_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.FLY_ONE_CM) / 100.0)
                 .setMetadata("climb_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.CLIMB_ONE_CM) / 100.0)
                 .setMetadata("dive_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.SWIM_ONE_CM) / 100.0)
                 .setMetadata("minecart_distance", bukkitPlayer.getStatistic(org.bukkit.Statistic.MINECART_ONE_CM) / 100.0)

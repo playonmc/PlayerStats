@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-defaultTasks("shadowJar")
+defaultTasks("shadowJar", "copyToServer")
 
 plugins {
     id("java")
@@ -23,6 +23,7 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.11.0")
     implementation("com.intellectualsites.http:HTTP4J:1.6-SNAPSHOT")
     implementation("com.jeff-media:custom-block-data:2.2.2")
+    compileOnly("net.luckperms:api:5.4")
 }
 
 java {
