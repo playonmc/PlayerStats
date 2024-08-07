@@ -62,7 +62,7 @@ public class PlayerStatisticHeartbeatManager {
         task.cancel();
     }
 
-    private void sendStatistics(UUID uuid) {
+    public void sendStatistics(UUID uuid) {
         Player bukkitPlayer = plugin.getServer().getPlayer(uuid);
         if (bukkitPlayer == null) {
             plugin.getLogger().warning("Player " + uuid + " is not online, cannot send statistics.");

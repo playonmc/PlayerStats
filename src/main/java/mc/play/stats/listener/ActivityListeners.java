@@ -21,15 +21,17 @@ public class ActivityListeners implements Listener {
         Player player = event.getPlayer();
         boolean firstJoin = !player.hasPlayedBefore();
 
+        plugin.getPlayerStatisticHeartbeatManager().addPlayer(player.getUniqueId());
+
         Event joinEvent = new Event("player:join")
                 .setMetadata("lastJoined", System.currentTimeMillis());
 
         if (firstJoin) {
+            plugin.getPlayerStatisticHeartbeatManager().sendStatistics(player.getUniqueId());
             joinEvent.setMetadata("firstJoin", true);
         }
 
         plugin.triggerEvent(joinEvent, player);
-        plugin.getPlayerStatisticHeartbeatManager().addPlayer(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
